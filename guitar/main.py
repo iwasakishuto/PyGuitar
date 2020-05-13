@@ -1,6 +1,7 @@
 # coding: utf-8
 import os
 import json
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -18,6 +19,8 @@ GUITAR_STRINGS = {
 }
 with open(os.path.join(DATA_DIR_PATH, "scales.json"), mode="r") as f:
     SCALE2INTERVALS = json.load(f)
+with open(os.path.join(DATA_DIR_PATH, "chord.json"), mode="r") as f:
+    CHORDS = json.load(f)
 
 def get_notes(key, intervals):
     """
@@ -84,9 +87,35 @@ class Guitar():
         plt.yticks(np.arange(1,NUM_STRINGS+1), INIT_KEYS, fontsize=20)
         return fig, ax
 
-    def plot_chord(self, code, dark_model=False):
+    def plot_chord(self, chode, string=6, mode="major", dark_model=False):
+        if chode not in self.notes:
+            warnings.warn(f"{chode} is not included in the {self.notes}")
+        elif mode[:5] in ["major", "minor"]:
+            if self.notes.index(chode) in [0,3,4]:
+                mode = "major" + mode[5:]
+            else:
+                mode = "minor" + mode[5:]
+
+        positions = CHORDS.get(mode).get(str(string))
+        root_pos  = GUITAR_STRINGS.get(INIT_KEYS[6-string]).index(chode)
+        is_mutes  = [pos==False for pos in positions]
+        positions = [pos+root_pos for pos in positions]
+
         fig, ax = self._plot_chord_layout(dark_model=dark_model)
-        raise NotImplementedError("Not Impremented.")
+        for i,(y_val, pos, is_mute) in enumerate(zip([1,2,3,4,5,6], positions, is_mutes)):
+            x = pos+0.5
+            note = GUITAR_STRINGS.get(INIT_KEYS[i])[pos]
+            if 7-y_val == string:
+                font, color, radius = (14, "red", 0.4)
+            elif is_mute:
+                font, color, radius = (12, "green", 0.3)
+            else:
+                font, color, radius = (12, None, 0.3)
+            ax.add_patch(mpatches.Circle(xy=(x, y_val), radius=radius, color=color))
+            ax.annotate(note, (x, y_val), color='w', weight='bold',
+                        fontsize=font, ha='center', va='center')
+        plt.title(self.name + f" [{chode}({string}s){mode}]", fontsize=20)
+        plt.show()
 
     def plot_strings(self, dark_model=False, save=False):
         fig, ax = self._plot_chord_layout(dark_model=dark_model)

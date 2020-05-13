@@ -8,3 +8,4 @@ DATA_DIR_PATH = os.path.join(REPO_DIR_PATH, "data")
 from . import main
 
 from .main import Guitar
+from .main import INIT_KEYS, WHOLE_NOTES, GUITAR_STRINGS, SCALE2INTERVALS, CHORDS
