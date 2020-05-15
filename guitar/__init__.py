@@ -9,3 +9,7 @@ from . import main
 
 from .main import Guitar
 from .main import INIT_KEYS, WHOLE_NOTES, GUITAR_STRINGS, SCALE2INTERVALS, CHORDS
+from .main import get_intervals
+from .main import get_notes
+from .main import find_notes_positions
+from .main import find_key_major_scale

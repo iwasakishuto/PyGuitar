@@ -2,7 +2,7 @@
 import os
 import json
 import warnings
-import numpy as np
+from itertools import compress
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -22,12 +22,17 @@ with open(os.path.join(DATA_DIR_PATH, "scales.json"), mode="r") as f:
 with open(os.path.join(DATA_DIR_PATH, "chord.json"), mode="r") as f:
     CHORDS = json.load(f)
 
+def get_intervals(scale):
+    return SCALE2INTERVALS.get(scale.lower())
+
 def get_notes(key, intervals):
     """
     @params key       : Code key.
     @params intervals : Scale positions.
     @return notes     : Notes
     """
+    if isinstance(intervals, str):
+        intervals = get_intervals(scale)
     root = WHOLE_NOTES.index(key)
     octave = WHOLE_NOTES[root:root+LEN_OCTAVES]
     return [octave[i] for i in intervals]
@@ -44,11 +49,20 @@ def find_notes_positions(notes):
         notes_positions[init_key] = indexes
     return notes_positions
 
+def find_key_major_scale(majors=[], minors=[]):
+    is_majors = [1,0,0,1,1,0,0]
+    key_notes = {key: get_notes(key, SCALE2INTERVALS.get("major")) for key in WHOLE_NOTES[:LEN_OCTAVES]}
+    return {
+        k:v for k,v in key_notes.items()
+        if all([major in [e for e,is_major in zip(v,is_majors) if is_major] for major in majors])
+        and all([minor in [e for e,is_major in zip(v,is_majors) if not is_major] for minor in minors])
+    }
+
 class Guitar():
     def __init__(self, key="C", scale="major", dark_mode=False):
         self.key = key
         self.scale = scale
-        self.intervals = SCALE2INTERVALS.get(scale.lower())
+        self.intervals = get_intervals(scale)
         self.notes = get_notes(key, self.intervals)
         self.notes_pos_in_string = find_notes_positions(self.notes)
         self.facecoloer, self.linecolor = {
@@ -93,10 +107,10 @@ class Guitar():
         ax.set_axisbelow(True)
         ax.set_facecolor(self.facecoloer)
         ax.set_xlim([0.5, 21])
-        ax.set_xticks(np.arange(NUM_FRETS+1)+0.5)
-        ax.set_xticklabels(np.arange(NUM_FRETS+2), fontsize=20)
+        ax.set_xticks([i+0.5 for i in range(NUM_FRETS+1)])
+        ax.set_xticklabels(range(NUM_FRETS+2), fontsize=20)
         ax.set_ylim([0.4, 6.5])
-        ax.set_yticks(np.arange(1,NUM_STRINGS+1))
+        ax.set_yticks(range(1, NUM_STRINGS+1))
         ax.set_yticklabels(INIT_KEYS, fontsize=20)
         return ax
 
