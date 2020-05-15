@@ -1,15 +1,8 @@
 # coding: utf-8
-import os
-
-LIB_DIR_PATH  = os.path.dirname(os.path.abspath(__file__))
-REPO_DIR_PATH = os.path.dirname(LIB_DIR_PATH)
-DATA_DIR_PATH = os.path.join(REPO_DIR_PATH, "data")
-
 from . import main
+from . import env
 
 from .main import Guitar
-from .main import INIT_KEYS, WHOLE_NOTES, GUITAR_STRINGS, SCALE2INTERVALS, CHORDS
-from .main import get_intervals
-from .main import get_notes
-from .main import find_notes_positions
-from .main import find_key_major_scale
+
+
+__version__      = "0.0.1"
