@@ -8,7 +8,7 @@
 
 **PyGuitar** generates an **easy-to-practice** chord book.
 
-### Installation
+## Installation
 
 There are two ways to install PyGuitar:
 
@@ -23,13 +23,13 @@ There are two ways to install PyGuitar:
     $ sudo python setup.py install
     ```
 
-### How to use
+## How to use
 
-```python
-from guitar import Guitar
-guitar = Guitar(key="C", scale="major")
-```
-
+- **Create Guitar Instance**
+    ```python
+    from guitar import Guitar
+    guitar = Guitar(key="C", scale="major")
+    ```
 - **plot guitar layout**
     ```python
     guitar.plot_chord_layout()

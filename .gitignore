@@ -1,2 +1,16 @@
 __pycache__
 .ipynb_checkpoints
+.DS_Store
+
+# Icon
+Icon?
+! */*icon*
+
+# PyPI
+dist/
+MANIFEST
+PyGuitar.egg-info/
+
+#pytest
+.pytest_cache
+!tests/README.md
