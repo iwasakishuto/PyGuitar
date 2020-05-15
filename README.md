@@ -3,7 +3,7 @@
 ![PyGuitar](https://github.com/iwasakishuto/PyGuitar/blob/master/image/pyguitar.png?raw=true)
 
 [![PyPI version](https://badge.fury.io/py/PyGuitar.svg)](https://pypi.org/project/PyGuitar/)
-[![GitHub version](https://badge.fury.io/py/PyGuitar.svg)](https://github.com/iwasakishuto/PyGuitar)
+[![GitHub version](https://badge.fury.io/gh/iwasakishuto%2FPyGuitar.svg)](https://github.com/iwasakishuto/PyGuitar)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/iwasakishuto/PyGuitar/blob/gh-pages/LICENSE)
 
 **PyGuitar** generates an **easy-to-practice** chord book.
