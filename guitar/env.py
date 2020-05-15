@@ -9,10 +9,12 @@ __all__ = [
     "SCALE2INTERVALS", "CHORDS",
 ]
 
+# PATH
 LIB_DIR_PATH  = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR_PATH = os.path.dirname(LIB_DIR_PATH)
-DATA_DIR_PATH = os.path.join(REPO_DIR_PATH, "data")
+DATA_DIR_PATH = os.path.join(LIB_DIR_PATH, "data")
 
+# Variables.
 NUM_FRETS   = 20
 NUM_STRINGS = 6
 LEN_OCTAVES = 12
@@ -23,6 +25,8 @@ GUITAR_STRINGS = {
     init_key : WHOLE_NOTES[WHOLE_NOTES.index(init_key):][:NUM_FRETS]
     for init_key in INIT_KEYS
 }
+
+# Json data.
 with open(os.path.join(DATA_DIR_PATH, "scales.json"), mode="r") as f:
     SCALE2INTERVALS = json.load(f)
 with open(os.path.join(DATA_DIR_PATH, "chord.json"), mode="r") as f:
