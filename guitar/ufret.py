@@ -55,7 +55,7 @@ def get_ufret_chords_with_driver(driver, url, key="0", to_json=False):
     }
     if to_json:
         with open(f"{title.replace('/', '')} | key-{key}.json", 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=2, ensure_ascii=False)
     else:
         return (title, key, data)
 
