@@ -23,14 +23,14 @@ def make_2COLOR_funcs(color="BLUE"):
     func = lambda x: f"{code}{x}\033[0m"
     return func
 
-toRED       = make_COLOR_funcs("RED")
-toGREEN     = make_COLOR_funcs("GREEN")
-toYELLOW    = make_COLOR_funcs("YELLOW")
-toBLUE      = make_COLOR_funcs("BLUE")
-toPURPLE    = make_COLOR_funcs("PURPLE")
-toCYAN      = make_COLOR_funcs("CYAN")
-toWHITE     = make_COLOR_funcs("WHITE")
-toRETURN    = make_COLOR_funcs("RETURN")    # 反転
-toACCENT    = make_COLOR_funcs("ACCENT")    # 強調
-toFLASH     = make_COLOR_funcs("FLASH")     # 点滅
-toRED_FLASH = make_COLOR_funcs("RED_FLASH") # 赤背景+点滅
+toRED       = make_2COLOR_funcs("RED")
+toGREEN     = make_2COLOR_funcs("GREEN")
+toYELLOW    = make_2COLOR_funcs("YELLOW")
+toBLUE      = make_2COLOR_funcs("BLUE")
+toPURPLE    = make_2COLOR_funcs("PURPLE")
+toCYAN      = make_2COLOR_funcs("CYAN")
+toWHITE     = make_2COLOR_funcs("WHITE")
+toRETURN    = make_2COLOR_funcs("RETURN")    # 反転
+toACCENT    = make_2COLOR_funcs("ACCENT")    # 強調
+toFLASH     = make_2COLOR_funcs("FLASH")     # 点滅
+toRED_FLASH = make_2COLOR_funcs("RED_FLASH") # 赤背景+点滅

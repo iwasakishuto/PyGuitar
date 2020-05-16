@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from . import coloring_utils
-from . import driver_wrapper
+from . import driver_utils
 from . import guitar_utils
 
 from .driver_utils import driver_wrapper
