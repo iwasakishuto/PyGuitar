@@ -19,7 +19,7 @@ ipython: build
 	$(DOCKER) run -v $(SRC):/src/workspace -v $(DATA):/data pyguitar ipython
 
 notebook: build
-	$(DOCKER) run -v $(SRC):/src/workspace -v $(DATA):/data pyguitar
+	$(DOCKER) run -p $(HOST_PORT):8888 -v $(SRC):/src/workspace -v $(DATA):/data pyguitar
 
 examples: build
 	$(DOCKER) run -p $(HOST_PORT):8888 -v $(SRC):/src/workspace -v $(EXAMPLES_PATH):/data/pyguitar_examples pyguitar
