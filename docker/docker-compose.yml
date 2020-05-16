@@ -1,0 +1,10 @@
+pyguitar:
+  build: .
+  ports:
+    - "8888:8888"
+  links:
+    - selenium
+selenium:
+  image: selenium/standalone-chrome:3.141.59-20200515
+  ports:
+    - "4444:4444"
