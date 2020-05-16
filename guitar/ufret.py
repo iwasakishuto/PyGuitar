@@ -30,7 +30,6 @@ def get_ufret_chords_with_driver(driver, url, key="0", to_json=False):
         title = title[:title_match.start()]
     print(f"title: {toGREEN(title)}")
 
-
     # Chord
     my_chord_data = driver.find_elements_by_id("my-chord-data")
     NOTES, LYRICS = [], []
@@ -52,7 +51,7 @@ def get_ufret_chords_with_driver(driver, url, key="0", to_json=False):
         i: {
             "chord": note,
             "lyric": lyric
-        } for i,(note,lyric) in enumerate(zip(notes, lyrics))
+        } for i,(note,lyric) in enumerate(zip(NOTES, LYRICS))
     }
     if to_json:
         with open(f"{title.replace('/', '')} | key-{key}.json", 'w') as f:
