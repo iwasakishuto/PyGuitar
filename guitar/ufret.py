@@ -8,7 +8,7 @@ from .utils.coloring_utils import *
 
 UFRET_TITLE_PATTERN = r"\sギターコード\/ウクレレコード\/ピアノコード - U-フレット"
 
-def _get_ufret_chords(driver, url, key="0"):
+def get_ufret_chords_with_driver(driver, url, key="0"):
     print(f"Accessing to {toBLUE(url)}...")
     driver.get(url)
 
@@ -47,4 +47,4 @@ def _get_ufret_chords(driver, url, key="0"):
     return (title, key, NOTES, LYRICS)
 
 def get_ufret_chords(url, key="0"):
-    return driver_wrapper(_get_ufret_chords, url, key=key)
+    return driver_wrapper(get_ufret_chords_with_driver, url, key=key)

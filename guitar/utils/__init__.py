@@ -1,8 +1,15 @@
 # coding: utf-8
 
-from . import generic_utils
+from . import coloring_utils
+from . import driver_wrapper
+from . import guitar_utils
 
-from .generic_utils import get_notes
-from .generic_utils import get_intervals
-from .generic_utils import find_notes_positions
-from .generic_utils import find_key_major_scale
+from .driver_utils import driver_wrapper
+
+from .coloring_utils import (toRED, toGREEN, toYELLOW, toBLUE, toPURPLE, toCYAN,
+                            toWHITE, toRETURN, toACCENT, toFLASH, toRED_FLASH)
+
+from .guitar_utils import get_notes
+from .guitar_utils import get_intervals
+from .guitar_utils import find_notes_positions
+from .guitar_utils import find_key_major_scale
