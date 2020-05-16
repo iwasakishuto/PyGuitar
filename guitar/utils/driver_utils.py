@@ -15,7 +15,7 @@ DRIVER_TYPE = "none"
 try:
     driver = webdriver.Chrome(options=chrome_options)
     driver.quit()
-    DRIVER_TYPE = "remote"
+    DRIVER_TYPE = "local"
 except:
     pass
 
@@ -24,7 +24,7 @@ try:
                               desired_capabilities=DesiredCapabilities.CHROME.copy(),
                               options=chrome_options)
     driver.quit()
-    DRIVER_TYPE = "local"
+    DRIVER_TYPE = "remote"
 except:
     pass
 
