@@ -30,6 +30,9 @@ def setup_package():
             'matplotlib>=2.2.4',
             # 'seaborn>=0.10.0',
         ],
+        extras_require={
+          'tests': ['pytest'],
+        },
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Intended Audience :: Other Audience',
