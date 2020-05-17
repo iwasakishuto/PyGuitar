@@ -45,7 +45,7 @@ There are two ways to install PyGuitar:
   guitar.plot_chord(chode="G#", string=6, mode="minor")
   ```
   ![chord-G#.png](https://github.com/iwasakishuto/PyGuitar/blob/master/image/chord-sample.png?raw=true)
-- **export notebook**
+- **export chordbook**
   ```python
   guitar = Guitar(key="B", scale="major", dark_mode=False)
   guitar.set_chord(chode="D#", string=5, mode="minor")
@@ -58,6 +58,13 @@ There are two ways to install PyGuitar:
   guitar.set_chord(chode="C#", string=5, mode="7th")
   guitar.set_chord(chode="D#", string=5, mode="7th")
   guitar.export_chord_book(fmt="pdf")
+  ```
+  ![chord-G#.png](https://github.com/iwasakishuto/PyGuitar/blob/master/examples/Whole-notes.png?raw=true)
+- **scraping -> chordbook**
+  ```python
+  title, key, data = get_ufret_chords_with_driver(url)
+  guitar = Guitar()
+  guitar.create_chord_book(data)
   ```
   ![chord-G#.png](https://github.com/iwasakishuto/PyGuitar/blob/master/image/chordbook-sample.png?raw=true)
 
