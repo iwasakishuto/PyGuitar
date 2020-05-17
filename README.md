@@ -34,39 +34,54 @@ There are two ways to install PyGuitar:
     ```python
     guitar.plot_chord_layout()
     ```
-    ![chord layout](https://github.com/iwasakishuto/PyGuitar/blob/master/image/chord-layout.png?raw=true)
+    <details>
+        <summary>Output</summary>
+        <img src="https://github.com/iwasakishuto/PyGuitar/blob/master/image/chord-layout.png?raw=true" alt="chord layout">
+    </details>
 - **plot guitar strings**
-  ```python
-  guitar.plot_strings()
-  ```
-  ![guitar strings](https://github.com/iwasakishuto/PyGuitar/blob/master/image/guitar-strings.png?raw=true)
+    ```python
+    guitar.plot_strings()
+    ```
+    <details>
+        <summary>Output</summary>
+        <img src="https://github.com/iwasakishuto/PyGuitar/blob/master/image/guitar-strings.png?raw=true" alt="guitar strings">
+    </details>
 - **plot chord**
-  ```python
-  guitar.plot_chord(chode="G#", string=6, mode="minor")
-  ```
-  ![chord-G#.png](https://github.com/iwasakishuto/PyGuitar/blob/master/image/chord-sample.png?raw=true)
+    ```python
+    guitar.plot_chord(chode="G#", string=6, mode="minor")
+    ```
+    <details>
+        <summary>Output</summary>
+        <img src="https://github.com/iwasakishuto/PyGuitar/blob/master/image/chord-sample.png?raw=true" alt="chord-G#.png">
+    </details>
 - **export chordbook**
-  ```python
-  guitar = Guitar(key="B", scale="major", dark_mode=False)
-  guitar.set_chord(chode="D#", string=5, mode="minor")
-  guitar.set_chord(chode="G#", string=6, mode="minor")
-  guitar.set_chord(chode="E",  string=6, mode="major")
-  guitar.set_chord(chode="B",  string=5, mode="major")
-  guitar.set_chord(chode="F#", string=6, mode="minor")
-  guitar.set_chord(chode="C#", string=5, mode="major")
-  guitar.set_chord(chode="F#", string=6, mode="sus4")
-  guitar.set_chord(chode="C#", string=5, mode="7th")
-  guitar.set_chord(chode="D#", string=5, mode="7th")
-  guitar.export_chord_book(fmt="pdf")
-  ```
-  ![chord-G#.png](https://github.com/iwasakishuto/PyGuitar/blob/master/examples/Whole-notes.png?raw=true)
+    ```python
+    guitar = Guitar(key="B", scale="major", dark_mode=False)
+    guitar.set_chord(chode="D#", string=5, mode="minor")
+    guitar.set_chord(chode="G#", string=6, mode="minor")
+    guitar.set_chord(chode="E",  string=6, mode="major")
+    guitar.set_chord(chode="B",  string=5, mode="major")
+    guitar.set_chord(chode="F#", string=6, mode="minor")
+    guitar.set_chord(chode="C#", string=5, mode="major")
+    guitar.set_chord(chode="F#", string=6, mode="sus4")
+    guitar.set_chord(chode="C#", string=5, mode="7th")
+    guitar.set_chord(chode="D#", string=5, mode="7th")
+    guitar.export_chord_book(fmt="pdf")
+    ```
+    <details>
+        <summary>Output</summary>
+        <img src="https://github.com/iwasakishuto/PyGuitar/blob/master/examples/Whole-notes.png?raw=true" alt="Whole-notes.png">
+    </details>
 - **scraping -> chordbook**
-  ```python
-  title, key, data = get_ufret_chords_with_driver(url)
-  guitar = Guitar()
-  guitar.create_chord_book(data)
-  ```
-  ![chord-G#.png](https://github.com/iwasakishuto/PyGuitar/blob/master/image/chordbook-sample.png?raw=true)
+    ```python
+    title, key, data = get_ufret_chords_with_driver(url)
+    guitar = Guitar()
+    guitar.create_chord_book(data)
+    ```
+    <details>
+        <summary>Output</summary>
+        <img src="https://github.com/iwasakishuto/PyGuitar/blob/master/image/chordbook-sample.png?raw=true" alt="chordbook.png">
+    </details>
 
 ### Reference
 
