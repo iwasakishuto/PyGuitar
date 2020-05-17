@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 from .env import *
-from .utils import get_notes, get_intervals, find_notes_positions
+from .utils import split_chord, get_notes, get_intervals, find_notes_positions
 
 class Guitar():
     def __init__(self, key="C", scale="major", dark_mode=False, name=""):
@@ -72,6 +72,53 @@ class Guitar():
             "mode"      : mode,
             "set_title" : set_title
         })
+
+    def create_chord_book(self, data, filename=None, fmt="pdf"):
+        """
+        @params data: {i : {'chord': [], 'lyric': []}}
+        ex.)
+        4: {'chord': ['G#m', 'C#m', 'F#', 'B'],
+            'lyric': ['一度はあの光', 'を見たんだよとて', 'もキレイ', 'で']},
+        5: {'chord': ['', 'G#m', 'C#m', 'F#', 'B'],
+            'lyric': ['でも', '今思えば', '汚かったあれは', 'いわゆるBadDay', 'Dreams']},
+        """
+        n_cols = max([len(v.get("chord")) for v in data.values()])
+        n_rows = len(data)+1
+        fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*n_rows))
+
+        ax_strings = plt.subplot2grid((n_rows, n_cols), (0, 0), colspan=n_cols)
+        ax_strings = self.plot_chord_layout(ax=ax_strings)
+        ax_strings = self.plot_strings(ax=ax_strings)
+        ax_strings.set_title(self.name + self.name)
+
+        for i,row in data.items():
+            chords = row.get("chord")
+            lyrics = row.get("lyric")
+            for j,(chord,lyric) in enumerate(zip(chords, lyrics)):
+                ax = plt.subplot2grid(shape=(n_rows, n_cols), loc=(1+i, j))
+                ax.set_title(lyric, fontsize=20)
+
+                if chord == "":
+                    continue
+                note, mode = split_chord(chord)
+
+                # Select how to play (string 5, or string 6)
+                root_pos_5  = GUITAR_STRINGS.get(INIT_KEYS[1]).index(note)
+                root_pos_6  = GUITAR_STRINGS.get(INIT_KEYS[0]).index(note)
+                if root_pos_5 < root_pos_6:
+                    root_pos, string = (root_pos_5, 5)
+                else:
+                    root_pos, string = (root_pos_6, 6)
+
+                ax = self.plot_chord_layout(ax=ax)
+                ax = self.plot_chord(note, string=string, mode=mode, set_title=False, ax=ax)
+                ax.set_xlim([root_pos, min(root_pos+5, NUM_FRETS+1)])
+                ax.set_yticklabels([GUITAR_STRINGS.get(init_key)[root_pos-1] for init_key in INIT_KEYS], fontsize=20)
+
+        if fmt.lower() == "pdf":
+            fig.savefig(filename or self.pdf)
+        else:
+            fig.savefig(filename or self.png)
 
     def export_chord_book(self, filename=None, fmt="pdf"):
         num_chords = len(self.chords)
