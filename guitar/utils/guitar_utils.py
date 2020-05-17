@@ -1,7 +1,23 @@
 # coding: utf-8
-
+import re
 from ..env import (NUM_FRETS, LEN_OCTAVES,
                    SCALE2INTERVALS, WHOLE_NOTES, GUITAR_STRINGS)
+
+def split_chord(chord):
+    """
+    U-FRET format -> PyGuitar format.
+    TODE: I want to deal with it by adding an alias for `chord.json`
+    """
+    note, mode = re.sub(r"([A-G]#?)(.*)", r"\1-\2", chord).split("-")
+    if mode == "":
+        mode = "major"
+    elif mode == "m":
+        mode = "minor"
+    elif mode == "m7":
+        mode = "minor7th"
+    elif mode == "7":
+        mode = "major7th"
+    return note, mode
 
 def get_intervals(scale):
     """ Get intervals from scale. """
