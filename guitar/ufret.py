@@ -5,7 +5,7 @@ import json
 from selenium.webdriver.support.ui import Select
 
 from .utils import driver_wrapper
-from .utils.coloring_utils import *
+from kerasy.utils import toBLUE, toGREEN
 
 UFRET_TITLE_PATTERN = r"\sギターコード\/ウクレレコード\/ピアノコード - U-フレット"
 

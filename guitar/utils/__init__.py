@@ -4,10 +4,10 @@ from . import coloring_utils
 from . import driver_utils
 from . import guitar_utils
 
-from .driver_utils import driver_wrapper
+from .coloring_utils import plot_notes_color_theme
+from .coloring_utils import plot_notes_all_color_theme
 
-from .coloring_utils import (toRED, toGREEN, toYELLOW, toBLUE, toPURPLE, toCYAN,
-                            toWHITE, toRETURN, toACCENT, toFLASH, toRED_FLASH)
+from .driver_utils import driver_wrapper
 
 from .guitar_utils import split_chord
 from .guitar_utils import get_notes

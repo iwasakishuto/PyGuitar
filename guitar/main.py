@@ -3,6 +3,7 @@ import warnings
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.backends.backend_pdf import PdfPages
+from kerasy.utils import toBLUE, ProgressMonitor
 
 def x_mark(xy, radius=5, **kwargs):
     x,y = xy
@@ -85,7 +86,7 @@ class Guitar():
             "set_title" : set_title
         })
 
-    def create_chord_book(self, data, nrows=5, filename=None):
+    def create_chord_book(self, data, nrows=5, filename=None, verbose=1):
         """
         @params data     : {i : {'chord': [], 'lyric': []}}
         @params nrows    : 
@@ -97,7 +98,8 @@ class Guitar():
             'lyric': ['でも', '今思えば', '汚かったあれは', 'いわゆるBadDay', 'Dreams']},
         """
         ncols = max([len(v.get("chord")) for v in data.values()])
-        pp = PdfPages(filename or self.pdf)
+        filename = filename or self.pdf
+        pp = PdfPages(filename)
 
         # <Title>
         fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
@@ -108,6 +110,8 @@ class Guitar():
 
         # <Content>
         # for i,row in data.items():
+        n = -1
+        monitor = ProgressMonitor(max_iter=sum([len(e.get('chord')) for e in data.values()]), verbose=verbose, barname=filename)
         for i,row in enumerate(data.values()):
             if i%nrows==0:
                 fig.tight_layout()
@@ -117,6 +121,8 @@ class Guitar():
             chords = row.get("chord")
             lyrics = row.get("lyric")
             for j,(chord,lyric) in enumerate(zip(chords, lyrics)):
+                n+=1
+                monitor.report(n, chord=chord, lyric=lyric)
                 ax = plt.subplot2grid(shape=(nrows, ncols), loc=(i%5, j))
                 ax.set_title(lyric, fontsize=20)
                 ax.set_xlabel(chord, fontsize=25); ax.xaxis.label.set_color("green")
@@ -139,9 +145,11 @@ class Guitar():
                 ax = self.plot_chord(note, string=string, mode=mode, set_title=False, ax=ax)
                 ax.set_xlim([root_pos, min(root_pos+5, NUM_FRETS+1)])
                 ax.set_yticklabels([GUITAR_STRINGS.get(init_key)[root_pos-1] for init_key in INIT_KEYS], fontsize=20)
+        monitor.remove()
         plt.savefig(pp, format="pdf")
         fig.clf()
         pp.close()
+        if verbose: print(f"Save at {toBLUE(filename)}")
 
     def export_chord_book(self, filename=None, fmt="pdf"):
         num_chords = len(self.chords)
@@ -177,7 +185,7 @@ class Guitar():
 
         positions = CHORDS.get(mode).get(str(string))
         root_pos  = GUITAR_STRINGS.get(INIT_KEYS[6-string]).index(chode)
-        is_mutes  = [pos==False for pos in positions]
+        is_mutes  = [isinstance(pos, bool) and pos==False for pos in positions]
         positions = [pos+root_pos for pos in positions]
 
         ax = self.plot_chord_layout(ax)
@@ -191,8 +199,7 @@ class Guitar():
             else:
                 font, color, radius, func = (12, None, 0.3, mpatches.Circle)
             ax.add_patch(func(xy=(x, y_val), radius=radius, color=color))
-            ax.annotate(note, (x, y_val), color='w', weight='bold',
-                        fontsize=font, ha='center', va='center')
+            ax.annotate(s=note, xy=(x, y_val), color='w', weight='bold', fontsize=font, ha='center', va='center')
 
         if set_title:
             ax.set_title(self.name + f" [{chode}({string}s){mode}]", fontsize=20)

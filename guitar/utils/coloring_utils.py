@@ -1,36 +1,34 @@
 # coding: utf-8
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.cm as cm
+from guitar.env import *
+from kerasy.utils import chooseTextColor, handleTypeError
 
-__all__ = [
-    "toRED", "toGREEN", "toYELLOW", "toBLUE", "toPURPLE", "toCYAN",
-    "toWHITE", "toRETURN", "toACCENT", "toFLASH", "toRED_FLASH",
-]
+def plot_notes_color_theme(theme, radius=0.3, fontsize=20):
+    """
+    @params theme : (str) Color theme for `matplotlib.cm.cmap_d`
+    """
+    if isinstance(theme, matplotlib.colors.ListedColormap) or \
+        isinstance(theme, matplotlib.colors.LinearSegmentedColormap):
+        cmap = theme
+        theme = cmap.name
+    elif isinstance(theme, str):
+        cmap = cm.cmap_d.get(theme)
+    else:
+        handleTypeError(types=[str, matplotlib.colors.ListedColormap, matplotlib.colors.LinearSegmentedColormap], theme=theme)
 
-def make_2COLOR_funcs(color="BLUE"):
-    code = {
-        "BLACK"     : '\033[30m',
-        "RED"       : '\033[31m',
-        "GREEN"     : '\033[32m',
-        "YELLOW"    : '\033[33m',
-        "BLUE"      : '\033[34m',
-        "PURPLE"    : '\033[35m',
-        "CYAN"      : '\033[36m',
-        "WHITE"     : '\033[37m',
-        "RETURN"    : '\033[07m',    # 反転
-        "ACCENT"    : '\033[01m',    # 強調
-        "FLASH"     : '\033[05m',    # 点滅
-        "RED_FLASH" : '\033[05;41m', # 赤背景+点滅
-    }.get(color.upper())
-    func = lambda x: f"{code}{x}\033[0m"
-    return func
-
-toRED       = make_2COLOR_funcs("RED")
-toGREEN     = make_2COLOR_funcs("GREEN")
-toYELLOW    = make_2COLOR_funcs("YELLOW")
-toBLUE      = make_2COLOR_funcs("BLUE")
-toPURPLE    = make_2COLOR_funcs("PURPLE")
-toCYAN      = make_2COLOR_funcs("CYAN")
-toWHITE     = make_2COLOR_funcs("WHITE")
-toRETURN    = make_2COLOR_funcs("RETURN")    # 反転
-toACCENT    = make_2COLOR_funcs("ACCENT")    # 強調
-toFLASH     = make_2COLOR_funcs("FLASH")     # 点滅
-toRED_FLASH = make_2COLOR_funcs("RED_FLASH") # 赤背景+点滅
+    fig, ax = plt.subplots(figsize=(12,1))
+    ax.set_xlim(-0.5,11.5); ax.set_ylim(-0.5,0.5)
+    ax.set_title(theme)
+    for i,note in enumerate(NOTES):   
+        rgba = cmap(i/LEN_OCTAVES)
+        fc = chooseTextColor(rgba[:3], ctype="rgb", max_val=1)
+        ax.add_patch(mpatches.Circle(xy=(i, 0), radius=radius, color=rgba))
+        ax.annotate(s=note, xy=(i, 0), color=fc, weight='bold', fontsize=fontsize, ha='center', va='center')
+    plt.show()
+    
+def plot_notes_all_color_theme(radius=0.3, fontsize=20):
+    for name, cmap in cm.cmap_d.items():
+        plot_notes_color_theme(cmap, radius=radius, fontsize=fontsize)
