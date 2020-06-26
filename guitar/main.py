@@ -2,6 +2,7 @@
 import warnings
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.backends.backend_pdf import PdfPages
 
 from .env import *
 from .utils import split_chord, get_notes, get_intervals, find_notes_positions
@@ -73,7 +74,7 @@ class Guitar():
             "set_title" : set_title
         })
 
-    def create_chord_book(self, data, filename=None, fmt="pdf"):
+    def create_chord_book(self, data, nrows=5, filename=None, fmt="pdf"):
         """
         @params data: {i : {'chord': [], 'lyric': []}}
         ex.)
@@ -82,20 +83,27 @@ class Guitar():
         5: {'chord': ['', 'G#m', 'C#m', 'F#', 'B'],
             'lyric': ['でも', '今思えば', '汚かったあれは', 'いわゆるBadDay', 'Dreams']},
         """
-        n_cols = max([len(v.get("chord")) for v in data.values()])
-        n_rows = len(data)+1
-        fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*n_rows))
+        ncols = max([len(v.get("chord")) for v in data.values()])
+        pp = PdfPages(filename or self.pdf)
 
-        ax_strings = plt.subplot2grid((n_rows, n_cols), (0, 0), colspan=n_cols)
-        ax_strings = self.plot_chord_layout(ax=ax_strings)
+        # <Title>
+        # fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
+        fig, ax = self.chord_layout_create()
+        ax_strings = self.plot_chord_layout(ax=ax)
         ax_strings = self.plot_strings(ax=ax_strings)
-        ax_strings.set_title(self.name + self.name)
+        ax_strings.set_title(f"{self.name_} ({self.name})")
 
-        for i,row in data.items():
+        # <Content>
+        # for i,row in data.items():
+        for i,row in enumerate(data.values()):
+            if i%nrows==0:
+                plt.savefig(pp, format="pdf")
+                fig.clf()
+                fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
             chords = row.get("chord")
             lyrics = row.get("lyric")
             for j,(chord,lyric) in enumerate(zip(chords, lyrics)):
-                ax = plt.subplot2grid(shape=(n_rows, n_cols), loc=(1+i, j))
+                ax = plt.subplot2grid(shape=(nrows, ncols), loc=(i%5, j))
                 ax.set_title(lyric, fontsize=20)
 
                 if chord == "":
@@ -114,11 +122,9 @@ class Guitar():
                 ax = self.plot_chord(note, string=string, mode=mode, set_title=False, ax=ax)
                 ax.set_xlim([root_pos, min(root_pos+5, NUM_FRETS+1)])
                 ax.set_yticklabels([GUITAR_STRINGS.get(init_key)[root_pos-1] for init_key in INIT_KEYS], fontsize=20)
-
-        if fmt.lower() == "pdf":
-            fig.savefig(filename or self.pdf)
-        else:
-            fig.savefig(filename or self.png)
+        plt.savefig(pp, format="pdf")
+        fig.clf()
+        pp.close()
 
     def export_chord_book(self, filename=None, fmt="pdf"):
         num_chords = len(self.chords)
