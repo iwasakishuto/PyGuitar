@@ -33,11 +33,16 @@ RUN pip install --upgrade pip && \
       pip install git+git://github.com/iwasakishuto/PyGuitar.git
 
 # matplotlib Japanese.
-RUN wget https://ipafont.ipa.go.jp/IPAfont/IPAfont00303.zip -O font.zip && \
-    unzip font.zip && \
-    cp IPAfont00303/ipam.ttf /opt/conda/lib/python3.7/site-packages/matplotlib/mpl-data/fonts/ttf/ipam.ttf && \
-    echo "font.family : IPAMincho" >>  /opt/conda/lib/python3.7/site-packages/matplotlib/mpl-data/matplotlibrc && \
-    rm -r ./.cache
+# /path/to/site-packages/matplotlib
+# ENV MATPLOTLIBPATH=$(python3 -c "import matplotlib; print(matplotlib.__path__)[0]")
+# RUN wget https://ipafont.ipa.go.jp/IPAfont/IPAfont00303.zip -O font.zip && \
+#     unzip font.zip && \
+#     cp IPAfont00303/ipam.ttf ${MATPLOTLIBPATH}/mpl-data/fonts/ttf/ipam.ttf && \
+#     echo "font.family : IPAMincho" >> ${MATPLOTLIBPATH}/mpl-data/matplotlibrc && \
+#     rm -r ./.cache
+# Use ShellScript.
+# COPY matplotlib.sh /
+# RUN chmod +x /matplotlib.sh; bash -c "/matplotlib.sh"
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
