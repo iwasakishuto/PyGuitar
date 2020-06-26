@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from kerasy.utils import toBLUE, ProgressMonitor
 
+from .utils import plot_logo
+from .utils import ax_clear
 from .utils import get_notes2color
+from .utils import plot_notes_color_theme
 from .utils.mpatches_utils import mpatches
 
 from .env import *
@@ -23,6 +26,7 @@ class Guitar():
         }[dark_mode]
         self.chords = []
         self.name_ = name
+        self.theme = theme
         self.notes2color = get_notes2color(theme=theme)
 
     @property
@@ -78,6 +82,35 @@ class Guitar():
             "set_title" : set_title
         })
 
+    def create_book_cover(self, *shape, title_size=70):
+        nrows, ncols = shape
+        # <Front Cover>
+        fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
+        # Log
+        ax_log = plt.subplot2grid((nrows, ncols), (0, 0), colspan=ncols)
+        ax_log = plot_logo(ax_log)
+        # Title
+        if nrows>=2:
+            ax_title = plt.subplot2grid((nrows, ncols), (1, 0), colspan=ncols)
+            ax_title.annotate(s=self.name_, xy=(0.5, 0.5), color='black', weight='bold', fontsize=title_size, ha='center', va='center')
+            ax_title = ax_clear(ax_title)
+        # Key & scale
+        if nrows>=3:
+            ax_keyscale = plt.subplot2grid((nrows, ncols), (2, 0), colspan=ncols)
+            ax_keyscale.annotate(s=f"- {self.name} -", xy=(0.5, 0.8), color='black', weight='bold', fontsize=50, ha='center', va='center')
+            ax_keyscale = ax_clear(ax_keyscale)
+        # Strings.
+        if nrows>=4:
+            ax_strings = plt.subplot2grid((nrows, ncols), (3, 0), colspan=ncols)
+            ax_strings = self.plot_chord_layout(ax=ax_strings)
+            ax_strings = self.plot_strings(ax=ax_strings)
+
+        if nrows>=5:
+            ax_notes = plt.subplot2grid((nrows, ncols), (4, 0), colspan=ncols)
+            ax_notes = plot_notes_color_theme(theme=self.theme, ax=ax_notes, fig=fig)
+            ax_notes = ax_clear(ax_notes)
+        return fig
+
     def create_chord_book(self, data, nrows=5, filename=None, verbose=1):
         """
         @params data     : {i : {'chord': [], 'lyric': []}}
@@ -93,15 +126,10 @@ class Guitar():
         filename = filename or self.pdf
         pp = PdfPages(filename)
 
-        # <Title>
-        fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
-        ax_strings = plt.subplot2grid((nrows, ncols), (nrows-1, 0), colspan=ncols)
-        ax_strings = self.plot_chord_layout(ax=ax_strings)
-        ax_strings = self.plot_strings(ax=ax_strings)
-        ax_strings.set_title(self.name + self.name)
+        # <Front Cover>
+        fig = self.create_book_cover(nrows, ncols)
 
         # <Content>
-        # for i,row in data.items():
         n = -1
         monitor = ProgressMonitor(max_iter=sum([len(e.get('chord')) for e in data.values()]), verbose=verbose, barname=filename)
         for i,row in enumerate(data.values()):
@@ -117,13 +145,14 @@ class Guitar():
                 monitor.report(n, chord=chord, lyric=lyric)
                 ax = plt.subplot2grid(shape=(nrows, ncols), loc=(i%5, j))
                 ax.set_title(lyric, fontsize=20)
-                ax.set_xlabel(chord, fontsize=25); ax.xaxis.label.set_color("green")
+                ax.set_xlabel(chord, fontsize=30)
 
                 if chord == "": 
-                    ax.tick_params(labelbottom=False, labelleft=False)
-                    ax.tick_params(bottom=False, left=False)
+                    ax = ax_clear(ax)
                     continue
                 note, mode = split_chord(chord)
+                bg,fc = self.notes2color.get(note)
+                ax.xaxis.label.set_color(bg)
 
                 # Select how to play (string 5, or string 6)
                 root_pos_5  = GUITAR_STRINGS.get(INIT_KEYS[1]).index(note)
@@ -185,11 +214,11 @@ class Guitar():
             x = pos+0.5
             note = GUITAR_STRINGS.get(INIT_KEYS[i])[pos]
             bg, fc = self.notes2color.get(note)
-            if 7-y_val == string:
+            if 7-y_val == string: # Base Keys.
                 func = mpatches.star_hexagon
-            elif is_mute:
+            elif is_mute: # Mute Keys.
                 func = mpatches.x_mark
-            else:
+            else: # Other Keys.
                 func = mpatches.Circle
             ax.add_patch(func(xy=(x, y_val), radius=0.5, color=bg))
             ax.annotate(s=note, xy=(x, y_val), color=fc, weight='bold', fontsize=25, ha='center', va='center')
@@ -205,13 +234,13 @@ class Guitar():
             for i in self.notes_pos_in_string.get(init_key):
                 x = i+0.5
                 note = string[i]
+                bg, fc = self.notes2color.get(note)
                 if note == self.key:
-                    font, color, radius = (16, "green", 0.4)
+                    func = mpatches.star_hexagon
                 else:
-                    font, color, radius = (12,    None, 0.3)
-                ax.add_patch(mpatches.Circle(xy=(x, y_val), radius=radius, color=color))
-                ax.annotate(note, (x, y_val), color='w', weight='bold',
-                            fontsize=font, ha='center', va='center')
+                    func = mpatches.Circle
+                ax.add_patch(func(xy=(x, y_val), radius=0.4, color=bg))
+                ax.annotate(note, (x, y_val), color=fc, weight='bold', fontsize=20, ha='center', va='center')
         if set_title:
             ax.set_title(self.name, fontsize=20)
         return ax
