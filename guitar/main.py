@@ -4,6 +4,17 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.backends.backend_pdf import PdfPages
 
+def x_mark(xy, radius=5, **kwargs):
+    x,y = xy
+    r = radius
+    return plt.Polygon(xy=(
+        (x-0.5*r, y), (x-r, y-0.5*r), (x-0.5*r, y-r), 
+        (x, y-0.5*r), (x+0.5*r, y-r), (x+r, y-0.5*r),
+        (x+0.5*r, y), (x+r, y+0.5*r), (x+0.5*r, y+r),
+        (x, y+0.5*r), (x-0.5*r, y+r), (x-r, y+0.5*r),
+    ), closed=True, **kwargs)
+mpatches.x_mark = x_mark
+
 from .env import *
 from .utils import split_chord, get_notes, get_intervals, find_notes_positions
 
@@ -44,7 +55,7 @@ class Guitar():
             axes = self.plot_chord_layout(ax=axes)
         return fig, axes
 
-    def plot_chord_layout(self, ax=None):
+    def plot_chord_layout(self, ax=None, fontsize=20):
         if ax is None:
             fig,ax = self.chord_layout_create(n=1)
         # Plot Strings
@@ -60,10 +71,10 @@ class Guitar():
         ax.set_facecolor(self.facecoloer)
         ax.set_xlim([0.5, 21])
         ax.set_xticks([i+0.5 for i in range(NUM_FRETS+1)])
-        ax.set_xticklabels(range(NUM_FRETS+2), fontsize=20)
+        ax.set_xticklabels(range(NUM_FRETS+2), fontsize=fontsize)
         ax.set_ylim([0.4, 6.5])
         ax.set_yticks(range(1, NUM_STRINGS+1))
-        ax.set_yticklabels(INIT_KEYS, fontsize=20)
+        ax.set_yticklabels(INIT_KEYS, fontsize=fontsize)
         return ax
 
     def set_chord(self, chode, string=6, mode="major", set_title=True):
@@ -74,9 +85,11 @@ class Guitar():
             "set_title" : set_title
         })
 
-    def create_chord_book(self, data, nrows=5, filename=None, fmt="pdf"):
+    def create_chord_book(self, data, nrows=5, filename=None):
         """
-        @params data: {i : {'chord': [], 'lyric': []}}
+        @params data     : {i : {'chord': [], 'lyric': []}}
+        @params nrows    : 
+        @params filename : 
         ex.)
         4: {'chord': ['G#m', 'C#m', 'F#', 'B'],
             'lyric': ['一度はあの光', 'を見たんだよとて', 'もキレイ', 'で']},
@@ -87,16 +100,17 @@ class Guitar():
         pp = PdfPages(filename or self.pdf)
 
         # <Title>
-        # fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
-        fig, ax = self.chord_layout_create()
-        ax_strings = self.plot_chord_layout(ax=ax)
+        fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
+        ax_strings = plt.subplot2grid((nrows, ncols), (nrows-1, 0), colspan=ncols)
+        ax_strings = self.plot_chord_layout(ax=ax_strings)
         ax_strings = self.plot_strings(ax=ax_strings)
-        ax_strings.set_title(f"{self.name_} ({self.name})")
+        ax_strings.set_title(self.name + self.name)
 
         # <Content>
         # for i,row in data.items():
         for i,row in enumerate(data.values()):
             if i%nrows==0:
+                fig.tight_layout()
                 plt.savefig(pp, format="pdf")
                 fig.clf()
                 fig = plt.figure(figsize=(NUM_FRETS, NUM_STRINGS*nrows))
@@ -105,8 +119,11 @@ class Guitar():
             for j,(chord,lyric) in enumerate(zip(chords, lyrics)):
                 ax = plt.subplot2grid(shape=(nrows, ncols), loc=(i%5, j))
                 ax.set_title(lyric, fontsize=20)
+                ax.set_xlabel(chord, fontsize=25); ax.xaxis.label.set_color("green")
 
-                if chord == "":
+                if chord == "": 
+                    ax.tick_params(labelbottom=False, labelleft=False)
+                    ax.tick_params(bottom=False, left=False)
                     continue
                 note, mode = split_chord(chord)
 
@@ -168,12 +185,12 @@ class Guitar():
             x = pos+0.5
             note = GUITAR_STRINGS.get(INIT_KEYS[i])[pos]
             if 7-y_val == string:
-                font, color, radius = (14, "red", 0.4)
+                font, color, radius, func = (14, "red", 0.4, mpatches.Circle)
             elif is_mute:
-                font, color, radius = (12, "green", 0.3)
+                font, color, radius, func = (12, "green", 0.3, mpatches.x_mark)
             else:
-                font, color, radius = (12, None, 0.3)
-            ax.add_patch(mpatches.Circle(xy=(x, y_val), radius=radius, color=color))
+                font, color, radius, func = (12, None, 0.3, mpatches.Circle)
+            ax.add_patch(func(xy=(x, y_val), radius=radius, color=color))
             ax.annotate(note, (x, y_val), color='w', weight='bold',
                         fontsize=font, ha='center', va='center')
 
