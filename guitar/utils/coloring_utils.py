@@ -6,6 +6,13 @@ import matplotlib.cm as cm
 from guitar.env import *
 from kerasy.utils import chooseTextColor, handleTypeError
 
+def get_notes2color(theme="rainbow"):
+    notes2color={}
+    for i,note in enumerate(NOTES):
+        rgba = cm.cmap_d.get(theme)(i/LEN_OCTAVES)
+        notes2color[note] = (rgba, chooseTextColor(rgb=rgba[:3], ctype="rgb", max_val=1))
+    return notes2color
+
 def plot_notes_color_theme(theme, radius=0.3, fontsize=20):
     """
     @params theme : (str) Color theme for `matplotlib.cm.cmap_d`

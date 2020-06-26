@@ -1,26 +1,17 @@
 # coding: utf-8
 import warnings
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.backends.backend_pdf import PdfPages
 from kerasy.utils import toBLUE, ProgressMonitor
 
-def x_mark(xy, radius=5, **kwargs):
-    x,y = xy
-    r = radius
-    return plt.Polygon(xy=(
-        (x-0.5*r, y), (x-r, y-0.5*r), (x-0.5*r, y-r), 
-        (x, y-0.5*r), (x+0.5*r, y-r), (x+r, y-0.5*r),
-        (x+0.5*r, y), (x+r, y+0.5*r), (x+0.5*r, y+r),
-        (x, y+0.5*r), (x-0.5*r, y+r), (x-r, y+0.5*r),
-    ), closed=True, **kwargs)
-mpatches.x_mark = x_mark
+from .utils import get_notes2color
+from .utils.mpatches_utils import mpatches
 
 from .env import *
 from .utils import split_chord, get_notes, get_intervals, find_notes_positions
 
 class Guitar():
-    def __init__(self, key="C", scale="major", dark_mode=False, name=""):
+    def __init__(self, key="C", scale="major", dark_mode=False, theme="rainbow", name=""):
         self.key = key
         self.scale = scale
         self.intervals = get_intervals(scale)
@@ -32,6 +23,7 @@ class Guitar():
         }[dark_mode]
         self.chords = []
         self.name_ = name
+        self.notes2color = get_notes2color(theme=theme)
 
     @property
     def name(self):
@@ -192,14 +184,15 @@ class Guitar():
         for i,(y_val, pos, is_mute) in enumerate(zip([1,2,3,4,5,6], positions, is_mutes)):
             x = pos+0.5
             note = GUITAR_STRINGS.get(INIT_KEYS[i])[pos]
+            bg, fc = self.notes2color.get(note)
             if 7-y_val == string:
-                font, color, radius, func = (14, "red", 0.4, mpatches.Circle)
+                func = mpatches.star_hexagon
             elif is_mute:
-                font, color, radius, func = (12, "green", 0.3, mpatches.x_mark)
+                func = mpatches.x_mark
             else:
-                font, color, radius, func = (12, None, 0.3, mpatches.Circle)
-            ax.add_patch(func(xy=(x, y_val), radius=radius, color=color))
-            ax.annotate(s=note, xy=(x, y_val), color='w', weight='bold', fontsize=font, ha='center', va='center')
+                func = mpatches.Circle
+            ax.add_patch(func(xy=(x, y_val), radius=0.5, color=bg))
+            ax.annotate(s=note, xy=(x, y_val), color=fc, weight='bold', fontsize=25, ha='center', va='center')
 
         if set_title:
             ax.set_title(self.name + f" [{chode}({string}s){mode}]", fontsize=20)
