@@ -24,6 +24,7 @@ def setup_package():
             'Source Code': 'https://github.com/iwasakishuto/PyGuitar',
         },
         packages=setuptools.find_packages(),
+        package_data={'guitar': ['data/*']},
         python_requires=">=3.6",
         install_requires=[
             # 'numpy>=1.15.1',
@@ -42,7 +43,6 @@ def setup_package():
             'Topic :: Software Development :: Libraries',
             'Topic :: Software Development :: Libraries :: Python Modules',
         ],
-        package_data={'PyGuitar': ['guitar/data/*', 'image/pyguitar.png']},
     )
     setuptools.setup(**metadata)
 

@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-from . import REPO_DIR
+from . import MODULE_DIR
 
-logo_path = os.path.join(REPO_DIR, "image/pyguitar.png")
+logo_path = os.path.join(MODULE_DIR, "data/logo.png")
 logo_img  = np.asarray(Image.open(logo_path))
 
 def plot_logo(ax=None):
