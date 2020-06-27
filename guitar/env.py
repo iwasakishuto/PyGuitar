@@ -5,7 +5,8 @@ import json
 __all__ = [
     # "LIB_DIR_PATH", "REPO_DIR_PATH", "DATA_DIR_PATH",
     "NUM_FRETS", "NUM_STRINGS", "LEN_OCTAVES", "INIT_KEYS",
-    "NOTES", "WHOLE_NOTES", "GUITAR_STRINGS", "MAJOR_MODES",
+    "NOTES", "WHOLE_NOTES", "GUITAR_STRINGS", "MAJOR_MODES", 
+    "A4SIZE",
     "SCALE2INTERVALS", "CHORDS",
 ]
 
@@ -26,6 +27,9 @@ GUITAR_STRINGS = {
     for init_key in INIT_KEYS
 }
 MAJOR_MODES = ["major", "major7th", "major6th", "sus4", "aug", "omit3", "add9"]
+
+# PDF
+A4SIZE=(21.0, 29.7)
 
 # Json data.
 with open(os.path.join(DATA_DIR_PATH, "scales.json"), mode="r") as f:

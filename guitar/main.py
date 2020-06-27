@@ -82,11 +82,9 @@ class Guitar():
             "set_title" : set_title
         })
 
-    def create_book_cover(self, *shape, title_size=70, figsize=None):
+    def create_book_cover(self, *shape, title_size=70, figsize=A4SIZE):
         nrows, ncols = shape
         # <Front Cover>
-        if figsize is None:
-            figsize = (NUM_FRETS, NUM_STRINGS*nrows)
         fig = plt.figure(figsize=figsize)
         # Log
         ax_log = plt.subplot2grid((nrows, ncols), (0, 0), colspan=ncols)
@@ -113,7 +111,7 @@ class Guitar():
             ax_notes = ax_clear(ax_notes)
         return fig
 
-    def create_chord_book(self, data, nrows=5, filename=None, verbose=1, size="A4"):
+    def create_chord_book(self, data, nrows=5, filename=None, verbose=1, figsize=A4SIZE):
         """
         @params data     : {i : {'chord': [], 'lyric': []}}
         @params nrows    : 
@@ -124,13 +122,12 @@ class Guitar():
         5: {'chord': ['', 'G#m', 'C#m', 'F#', 'B'],
             'lyric': ['でも', '今思えば', '汚かったあれは', 'いわゆるBadDay', 'Dreams']},
         """
-        A4size = (11.69, 8.27)
         ncols = max([len(v.get("chord")) for v in data.values()])
         filename = filename or self.pdf
         pp = PdfPages(filename)
 
         # <Front Cover>
-        fig = self.create_book_cover(nrows, ncols, figsize=A4size)
+        fig = self.create_book_cover(nrows, ncols, figsize=figsize)
 
         # <Content>
         n = -1
@@ -140,7 +137,7 @@ class Guitar():
                 fig.tight_layout()
                 plt.savefig(pp, format="pdf")
                 fig.clf()
-                fig = plt.figure(figsize=A4size)
+                fig = plt.figure(figsize=figsize)
             chords = row.get("chord")
             lyrics = row.get("lyric")
             for j,(chord,lyric) in enumerate(zip(chords, lyrics)):
