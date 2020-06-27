@@ -11,7 +11,7 @@ from .utils import plot_notes_color_theme
 from .utils.mpatches_utils import mpatches
 
 from .env import *
-from .utils import split_chord, get_notes, get_intervals, find_notes_positions
+from .utils import ufret2pyguitar, get_notes, get_intervals, find_notes_positions
 
 class Guitar():
     def __init__(self, key="C", scale="major", dark_mode=False, theme="rainbow", name=""):
@@ -150,7 +150,7 @@ class Guitar():
                 if chord == "": 
                     ax = ax_clear(ax)
                     continue
-                note, mode = split_chord(chord)
+                note, mode, d = ufret2pyguitar(chord)
                 bg,fc = self.notes2color.get(note)
                 ax.xaxis.label.set_color(bg)
 

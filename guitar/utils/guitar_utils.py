@@ -1,23 +1,9 @@
 # coding: utf-8
-import re
-from ..env import (NUM_FRETS, LEN_OCTAVES,
-                   SCALE2INTERVALS, WHOLE_NOTES, GUITAR_STRINGS)
+from collections import defaultdict
 
-def split_chord(chord):
-    """
-    U-FRET format -> PyGuitar format.
-    TODE: I want to deal with it by adding an alias for `chord.json`
-    """
-    note, mode = re.sub(r"([A-G]#?)(.*)", r"\1-\2", chord).split("-")
-    if mode == "":
-        mode = "major"
-    elif mode == "m":
-        mode = "minor"
-    elif mode == "m7":
-        mode = "minor7th"
-    elif mode == "7":
-        mode = "major7th"
-    return note, mode
+from .fmt_utils import ufret2pyguitar
+from ..env import (NUM_FRETS, LEN_OCTAVES, MAJOR_MODES
+                   SCALE2INTERVALS, WHOLE_NOTES, GUITAR_STRINGS)
 
 def get_intervals(scale):
     """ Get intervals from scale. """
@@ -52,10 +38,53 @@ def find_key_major_scale(majors=[], minors=[]):
     """
     Find key based on the 'chords' that appear in the music and the specified 'scale'
     """
-    is_majors = [1,0,0,1,1,0,0]
-    key_notes = {key: get_notes(key, SCALE2INTERVALS.get("major")) for key in WHOLE_NOTES[:LEN_OCTAVES]}
-    return {
-        k:v for k,v in key_notes.items()
-        if all([major in [e for e,is_major in zip(v,is_majors) if is_major] for major in majors])
-        and all([minor in [e for e,is_major in zip(v,is_majors) if not is_major] for minor in minors])
-    }
+    is_majors  = [1,0,0,1,1,0,0]
+    num_majors = len(majors); num_minors = len(minors)
+    if num_majors+num_minors==0:
+        raise ValueError("Couldn't find key from nothing.")
+
+    # If majors/minors is dict, they have the frequencies, and we can use them as weights.
+    if not isinstance(majors, dict):
+        majors = dict(zip(majors, [1 for _ in range(majors)]))
+    if not isinstance(minors, dict):
+        minors = dict(zip(minors, [1 for _ in range(minors)]))
+    
+    get_score = {
+        (True, True)  : lambda maj,min : maj/num_majors + min/num_minors,
+        (True, False) : lambda maj,min : maj/num_majors,
+        (False, True) : lambda maj,min : min/num_minors,
+    }[(num_majors>0, num_minors>0)]
+
+    best_score = -1
+    for key in WHOLE_NOTES[:LEN_OCTAVES]:
+        maj = min = 0
+        notes = get_notes(key, SCALE2INTERVALS.get("major"))
+        for is_maj,note in zip(is_majors, notes):
+            if is_maj and note in majors: 
+                maj+=majors.get(note)
+            elif (not is_maj) and note in minors: 
+                min+=minors.get(note)
+        score = get_score(maj, min)
+        if score > best_score:
+            best_score=score
+            best_key=key
+    return best_key
+
+def get_chord_components(data, fmt="ufret"):
+    majors = defaultdict(int)
+    minors = defaultdict(int)
+
+    chord_convertor = {
+        "ufret" : ufret2pyguitar
+    }.get(fmt, ufret2pyguitar)
+
+    for row in data.values():
+        for chord in row.get("chord"):
+            if chord == "": 
+                continue
+            note, mode, d = chord_convertor(chord)
+            if mode in MAJOR_MODES:
+                majors[note] += 1
+            else:
+                minors[note] += 1
+    return majors, minors

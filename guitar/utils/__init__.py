@@ -7,6 +7,7 @@ REPO_DIR = os.path.dirname(MODULE_DIR)
 from . import coloring_utils
 from . import decorate_utils
 from . import driver_utils
+from . import fmt_utils
 from . import guitar_utils
 from . import mpatches_utils
 
@@ -19,10 +20,13 @@ from .decorate_utils import ax_clear
 
 from .driver_utils import driver_wrapper
 
-from .guitar_utils import split_chord
+from .fmt_utils import UFRET2PyGuitar_dict
+from .fmt_utils import ufret2pyguitar
+
 from .guitar_utils import get_notes
 from .guitar_utils import get_intervals
 from .guitar_utils import find_notes_positions
 from .guitar_utils import find_key_major_scale
+from .guitar_utils import get_chord_components
 
 from .mpatches_utils import mpatches
