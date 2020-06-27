@@ -16,10 +16,10 @@ build:
 	$(DOCKER) build pyguitar
 
 bash: build
-	$(DOCKER) run -v $(SRC):/src/workspace -v $(DATA):/data -v $(FONT_DIR):/font pyguitar bash
+	$(DOCKER) run -v $(SRC):/src/workspace -v $(DATA):/data -v $(FONT_DIR):/font -v $(PROGRAM_DIR):/program pyguitar bash
 
 ipython: build
-	$(DOCKER) run -v $(SRC):/src/workspace -v $(DATA):/data -v $(FONT_DIR):/font pyguitar ipython
+	$(DOCKER) run -v $(SRC):/src/workspace -v $(DATA):/data -v $(FONT_DIR):/font -v $(PROGRAM_DIR):/program pyguitar ipython
 
 notebook: build
 	$(DOCKER) run -p $(HOST_PORT):8888 -v $(SRC):/src/workspace -v $(DATA):/data -v $(FONT_DIR):/font pyguitar
@@ -31,4 +31,4 @@ rebuild:
 	$(DOCKER) build --no-cache pyguitar
 
 ufret:
-	$(DOCKER) run -v $(PROGRAM_DIR):/src/program -v $(DATA):/data -v $(FONT_DIR):/font pyguitar python3 /src/program/ufret.py --url ${URL}
+	$(DOCKER) run -v $(DATA):/data -v $(FONT_DIR):/font -v $(PROGRAM_DIR):/src/program  pyguitar python3 /src/program/ufret.py --url ${URL} --format json

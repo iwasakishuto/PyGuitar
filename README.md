@@ -82,6 +82,14 @@ There are two ways to install PyGuitar:
         <summary>Output</summary>
         <img src="https://github.com/iwasakishuto/PyGuitar/blob/master/image/chordbook-sample.png?raw=true" alt="chordbook.png">
     </details>
+- **scraping -> chordbook (docker oneline)**
+    ```sh
+    pwd
+    path/to/PyGuitar/docker
+    make ufret URL="https://www.ufret.jp/song.php?data=5012"
+    :
+    Save data at /data/'欲望に満ちた青年団 | ONE OK ROCK'-key_B-major_scale.pdf
+    ```
 
 ### Reference
 
