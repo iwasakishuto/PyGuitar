@@ -27,6 +27,7 @@ USER $NB_USER
 # Install Python packages and PyGuitar
 RUN pip install --upgrade pip && \
     pip install \
+      kerasy \
       matplotlib>=2.2.4 \
       selenium>=3.6.0 && \
       git clone git://github.com/iwasakishuto/PyGuitar.git /src && pip install -e /src[tests] && \
