@@ -2,7 +2,7 @@
 from collections import defaultdict
 
 from .fmt_utils import ufret2pyguitar
-from ..env import (NUM_FRETS, LEN_OCTAVES, MAJOR_MODES
+from ..env import (NUM_FRETS, LEN_OCTAVES, MAJOR_MODES,
                    SCALE2INTERVALS, WHOLE_NOTES, GUITAR_STRINGS)
 
 def get_intervals(scale):
