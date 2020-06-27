@@ -5,4 +5,4 @@ from . import ufret
 
 from .main import Guitar
 
-__version__      = "0.3.5"
+__version__ = "0.3.6"

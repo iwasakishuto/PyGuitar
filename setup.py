@@ -42,6 +42,7 @@ def setup_package():
             'Topic :: Software Development :: Libraries',
             'Topic :: Software Development :: Libraries :: Python Modules',
         ],
+        package_data={'PyGuitar': ['guitar/data/*', 'image/pyguitar.png']},
     )
     setuptools.setup(**metadata)
 
