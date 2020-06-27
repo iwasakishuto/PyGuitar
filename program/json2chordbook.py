@@ -13,13 +13,9 @@ from guitar.utils import find_key_major_scale
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i",   "--input",  type=str, required=True)
-    parser.add_argument("-o",   "--output", type=str, default="rainbow")
+    parser.add_argument("-o",   "--output", type=str, default=".")
+    parser.add_argument("-t",   "--theme", type=str, default="rainbow")
     parser.add_argument("-s",   "--scale",   type=str, default="major")
-    parser.add_argument("-c",   "--capo",    type=str, default="0")
-    parser.add_argument("-k",   "--key",     type=str)
-
-    parser.add_argument("--font_path",  type=str, default="/font/ipam.ttf")
-    parser.add_argument("--family",     type=str, default="IPAPMincho")
     args = parser.parse_args()
 
     base_dir = args.input
