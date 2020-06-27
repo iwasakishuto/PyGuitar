@@ -8,6 +8,7 @@ from . import coloring_utils
 from . import decorate_utils
 from . import driver_utils
 from . import fmt_utils
+from . import font_utils
 from . import guitar_utils
 from . import mpatches_utils
 
@@ -22,6 +23,8 @@ from .driver_utils import driver_wrapper
 
 from .fmt_utils import UFRET2PyGuitar_dict
 from .fmt_utils import ufret2pyguitar
+
+from .font_utils import japanize
 
 from .guitar_utils import get_notes
 from .guitar_utils import get_intervals

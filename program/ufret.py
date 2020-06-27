@@ -8,6 +8,7 @@ from guitar import Guitar
 from guitar.ufret import get_ufret_chords
 from guitar.utils import get_chord_components
 from guitar.utils import find_key_major_scale
+from guitar.utils import japanize
 
 here = os.path.dirname(os.path.abspath(__file__))
 print(f"Here is {toBLUE(here)}")
@@ -21,6 +22,8 @@ if __name__ == "__main__":
     parser.add_argument("-k",   "--key",     type=str)
     parser.add_argument("-d",   "--dir",     type=str, default="/data")
     parser.add_argument("-fmt", "--format",  type=str, default="pdf")
+    parser.add_argument("--font_path",  type=str, default="/font/ipam.ttf")
+    parser.add_argument("--family",     type=str, default="IPAPMincho")
     args = parser.parse_args()
 
     url   = args.url
@@ -30,6 +33,8 @@ if __name__ == "__main__":
     key   = args.key
     dir   = args.dir
     fmt   = args.format
+    font_path = args.font_path
+    family    = args.family
 
     title, capo, data = get_ufret_chords(url=url, capo=capo)
     if key is None:
@@ -46,6 +51,7 @@ if __name__ == "__main__":
     guitar = Guitar(key=key, scale=args.scale, dark_mode=False, theme=args.theme, name=title)
     filename = os.path.join(dir, guitar.pdf) if dir is not None else None
     if fmt=="pdf":
+        japanize(font_path=font_path, family=family)
         guitar.create_chord_book(data=data, nrows=5, filename=filename, verbose=1)
     else:
         filename = filename.replace(".pdf", ".json")
