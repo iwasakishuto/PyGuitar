@@ -49,4 +49,8 @@ ENV PYTHONPATH='/src/:$PYTHONPATH'
 
 WORKDIR /data
 
+# COPY matplotlib_ja.sh /src/matplotlib_ja.sh
+# RUN chmod 744 /src/matplotlib_ja.sh
+# CMD ["/matplotlib_ja.sh"]
+
 CMD jupyter notebook --port=8888 --ip=0.0.0.0

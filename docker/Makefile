@@ -30,4 +30,4 @@ rebuild:
 	$(DOCKER) build --no-cache pyguitar
 
 ufret:
-	$(DOCKER) run -v $(PROGRAM_DIR):/src/program -v $(DATA):/data pyguitar python3 /src/program/ufret.py --url ${URL}
+	$(DOCKER) run -v $(PROGRAM_DIR):/src/program -v $(DATA):/data pyguitar python3 /src/program/ufret.py --url ${URL} --format json

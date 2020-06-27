@@ -1,4 +1,5 @@
 #coding: utf-8
+import os
 import re
 import tqdm
 import json
@@ -9,7 +10,7 @@ from kerasy.utils import toBLUE, toGREEN
 
 UFRET_TITLE_PATTERN = r"\sギターコード\/ウクレレコード\/ピアノコード - U-フレット"
 
-def get_ufret_chords_with_driver(driver, url, capo="0", to_json=False):
+def get_ufret_chords_with_driver(driver, url, capo="0"):
     print(f"Accessing to {toBLUE(url)}...")
     driver.get(url)
 
@@ -18,7 +19,7 @@ def get_ufret_chords_with_driver(driver, url, capo="0", to_json=False):
         capo = f"{capo:+}"
     elif capo != "0" and capo[0] not in ["+", "-"]:
         capo = f"{int(capo):+}"
-    print(f"Set capo to {toGREEN(capo)}...")
+    print(f"Set capo to {toGREEN(capo)}")
     capo_select = driver.find_element_by_name('keyselect')
     capo_select = Select(capo_select)
     capo_select.select_by_value(capo)
@@ -53,11 +54,7 @@ def get_ufret_chords_with_driver(driver, url, capo="0", to_json=False):
             "lyric": lyric
         } for i,(note,lyric) in enumerate(zip(NOTES, LYRICS))
     }
-    if to_json:
-        with open(f"{title.replace('/', '')} | capo-{capo}.json", 'w') as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-    else:
-        return (title, capo, data)
+    return (title, capo, data)
 
-def get_ufret_chords(url, capo="0", to_json=False):
-    return driver_wrapper(get_ufret_chords_with_driver, url, capo=capo, to_json=to_json)
+def get_ufret_chords(url, capo="0"):
+    return driver_wrapper(get_ufret_chords_with_driver, url, capo=capo)
