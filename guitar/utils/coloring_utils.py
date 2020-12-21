@@ -34,7 +34,7 @@ def plot_notes_color_theme(theme="rainbow", radius=0.3, fontsize=20, title=True,
         rgba = cmap(i/LEN_OCTAVES)
         fc = chooseTextColor(rgba[:3], ctype="rgb", max_val=1)
         ax.add_patch(mpatches.Circle(xy=(i, 0), radius=radius, color=rgba))
-        ax.annotate(s=note, xy=(i, 0), color=fc, weight='bold', fontsize=fontsize, ha='center', va='center')
+        ax.annotate(text=note, xy=(i, 0), color=fc, weight='bold', fontsize=fontsize, ha='center', va='center')
     # Adjust for different sized figures.
     if fig is not None:
         bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())

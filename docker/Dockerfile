@@ -1,5 +1,5 @@
 FROM jupyter/scipy-notebook
-MAINTAINER iwasakishuto <cabernet.rock@gmail.com>
+LABEL maintainer="iwasakishuto <cabernet.rock@gmail.com>"
 
 USER root
 # Install system packages
@@ -35,12 +35,13 @@ RUN pip install --upgrade pip && \
 
 # matplotlib Japanese.
 # /path/to/site-packages/matplotlib
-# ENV MATPLOTLIBPATH=$(python3 -c "import matplotlib; print(matplotlib.__path__)[0]")
-# RUN wget https://ipafont.ipa.go.jp/IPAfont/IPAfont00303.zip -O font.zip && \
+# ENV MATPLOTLIBPATH=$(python3 -c "import matplotlib; print(matplotlib.__path__[0])")
+# RUN wget http://moji.or.jp/wp-content/ipafont/IPAfont/IPAfont00303.zip -O font.zip && \
 #     unzip font.zip && \
 #     cp IPAfont00303/ipam.ttf ${MATPLOTLIBPATH}/mpl-data/fonts/ttf/ipam.ttf && \
 #     echo "font.family : IPAMincho" >> ${MATPLOTLIBPATH}/mpl-data/matplotlibrc && \
-#     rm -r ./.cache
+#     rm -r ~/.cache
+
 # Use ShellScript.
 # COPY matplotlib.sh /
 # RUN chmod +x /matplotlib.sh; bash -c "/matplotlib.sh"

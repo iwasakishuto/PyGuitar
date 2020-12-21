@@ -43,6 +43,11 @@ def setup_package():
             'Topic :: Software Development :: Libraries',
             'Topic :: Software Development :: Libraries :: Python Modules',
         ],
+        entry_points = {
+            "console_scripts": [
+                "ufret=guitar.main:export_ufret_chordbooks",
+            ],
+        },
     )
     setuptools.setup(**metadata)
 

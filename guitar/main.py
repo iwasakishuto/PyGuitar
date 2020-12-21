@@ -1,20 +1,25 @@
 # coding: utf-8
+import re
+import sys
+import argparse
 import warnings
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 from matplotlib.backends.backend_pdf import PdfPages
-from kerasy.utils import toBLUE, ProgressMonitor
+from matplotlib import rcParams
+from kerasy.utils import toGREEN, toBLUE, ProgressMonitor
 
-from .utils import plot_logo
-from .utils import ax_clear
-from .utils import get_notes2color
-from .utils import plot_notes_color_theme
+from .utils.coloring_utils import get_notes2color, plot_notes_color_theme
+from .utils.decorate_utils import plot_logo, ax_clear
+from .utils.fmt_utils import ufret2pyguitar
+from .utils.guitar_utils  import find_key_major_scale, get_notes, get_intervals, find_notes_positions, get_chord_components
 from .utils.mpatches_utils import mpatches
 
 from .env import *
-from .utils import ufret2pyguitar, get_notes, get_intervals, find_notes_positions
+from .ufret import get_ufret_chords
 
 class Guitar():
-    def __init__(self, key="C", scale="major", dark_mode=False, theme="rainbow", name=""):
+    def __init__(self, key="C", scale="major", dark_mode=False, theme="rainbow", name="", font_family="Comic Sans MS", is_ja=False):
         self.key = key
         self.scale = scale
         self.intervals = get_intervals(scale)
@@ -28,6 +33,21 @@ class Guitar():
         self.name_ = name
         self.theme = theme
         self.notes2color = get_notes2color(theme=theme)
+        self.set_font(font_family=font_family, is_ja=is_ja)
+
+    def set_font(self, font_family=None, is_ja=False):
+        if is_ja:
+            font_family="IPAMincho"
+        if font_family!=None:
+            global rcParams
+            rcParams['font.family'] = font_family
+        else:
+            print(f"You can check the available font by {toGREEN('available_fonts')} property, and set it using {toBLUE('set_font')} method.")
+        print(f"The current {toBLUE('font.family')} is {toGREEN(rcParams['font.family'])}.")
+
+    @property
+    def available_fonts(self):
+        return fm.findSystemFonts()
 
     @property
     def name(self):
@@ -68,7 +88,7 @@ class Guitar():
         ax.set_facecolor(self.facecoloer)
         ax.set_xlim([0.5, 21])
         ax.set_xticks([i+0.5 for i in range(NUM_FRETS+1)])
-        ax.set_xticklabels(range(NUM_FRETS+2), fontsize=fontsize)
+        ax.set_xticklabels(range(NUM_FRETS+1), fontsize=fontsize)
         ax.set_ylim([0.4, 6.5])
         ax.set_yticks(range(1, NUM_STRINGS+1))
         ax.set_yticklabels(INIT_KEYS, fontsize=fontsize)
@@ -92,12 +112,12 @@ class Guitar():
         # Title
         if nrows>=2:
             ax_title = plt.subplot2grid((nrows, ncols), (1, 0), colspan=ncols)
-            ax_title.annotate(s=self.name_, xy=(0.5, 0.5), color='black', weight='bold', fontsize=title_size, ha='center', va='center')
+            ax_title.annotate(text=self.name_, xy=(0.5, 0.5), color='black', weight='bold', fontsize=title_size, ha='center', va='center')
             ax_title = ax_clear(ax_title)
         # Key & scale
         if nrows>=3:
             ax_keyscale = plt.subplot2grid((nrows, ncols), (2, 0), colspan=ncols)
-            ax_keyscale.annotate(s=f"- {self.name} -", xy=(0.5, 0.8), color='black', weight='bold', fontsize=50, ha='center', va='center')
+            ax_keyscale.annotate(text=f"- {self.name} -", xy=(0.5, 0.8), color='black', weight='bold', fontsize=50, ha='center', va='center')
             ax_keyscale = ax_clear(ax_keyscale)
         # Strings.
         if nrows>=4:
@@ -124,6 +144,7 @@ class Guitar():
         """
         ncols = max([len(v.get("chord")) for v in data.values()])
         filename = filename or self.pdf
+        filename = re.sub(pattern=r'[\\\/\?\*\|<>":;]+', repl='', string=filename)
         pp = PdfPages(filename)
 
         # <Front Cover>
@@ -221,7 +242,7 @@ class Guitar():
             else: # Other Keys.
                 func = mpatches.Circle
             ax.add_patch(func(xy=(x, y_val), radius=0.5, color=bg))
-            ax.annotate(s=note, xy=(x, y_val), color=fc, weight='bold', fontsize=25, ha='center', va='center')
+            ax.annotate(text=note, xy=(x, y_val), color=fc, weight='bold', fontsize=25, ha='center', va='center')
 
         if set_title:
             ax.set_title(self.name + f" [{chode}({string}s){mode}]", fontsize=20)
@@ -240,7 +261,23 @@ class Guitar():
                 else:
                     func = mpatches.Circle
                 ax.add_patch(func(xy=(x, y_val), radius=0.4, color=bg))
-                ax.annotate(note, (x, y_val), color=fc, weight='bold', fontsize=20, ha='center', va='center')
+                ax.annotate(text=note, xy=(x, y_val), color=fc, weight='bold', fontsize=20, ha='center', va='center')
         if set_title:
             ax.set_title(self.name, fontsize=20)
         return ax
+
+def export_ufret_chordbooks(argv=sys.argv[1:]):
+    parser = argparse.ArgumentParser(prog="export-ufret-chordbooks", add_help=True)
+    parser.add_argument("url",   type=str, help="URL of a page you want to create a pdf.")
+    parser.add_argument("--key",   type=str, help="key of the music")
+    parser.add_argument("--scale", type=str, default="major", choices=["major"], help="The position of a CAPO.")
+    parser.add_argument("--capo",  type=int, default=0, help="The position of a CAPO.")
+    args = parser.parse_args(argv)
+
+    title, key, data = get_ufret_chords(url=args.url, capo=args.capo)
+    find_key = {
+        "major": lambda data: find_key_major_scale(*get_chord_components(data=data))
+    }.get(args.scale)
+
+    guitar = Guitar(key=find_key(data), scale=args.scale, dark_mode=False, name=title, is_ja=True)
+    guitar.create_chord_book(data=data)

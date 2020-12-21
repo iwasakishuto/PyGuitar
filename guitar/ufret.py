@@ -5,7 +5,7 @@ import tqdm
 import json
 from selenium.webdriver.support.ui import Select
 
-from .utils import driver_wrapper
+from .utils.driver_utils import driver_wrapper
 from kerasy.utils import toBLUE, toGREEN
 
 UFRET_TITLE_PATTERN = r"\sギターコード\/ウクレレコード\/ピアノコード - U-フレット"
@@ -15,8 +15,11 @@ def get_ufret_chords_with_driver(driver, url, capo="0"):
     driver.get(url)
 
     # capo
-    if isinstance(capo, int) and capo!=0:
-        capo = f"{capo:+}"
+    if isinstance(capo, int):
+        if capo==0:
+            capo = "0"
+        else:
+            capo = f"{capo:+}"
     elif capo != "0" and capo[0] not in ["+", "-"]:
         capo = f"{int(capo):+}"
     print(f"Set capo to {toGREEN(capo)}")

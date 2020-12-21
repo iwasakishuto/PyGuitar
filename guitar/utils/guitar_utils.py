@@ -45,9 +45,9 @@ def find_key_major_scale(majors=[], minors=[]):
 
     # If majors/minors is dict, they have the frequencies, and we can use them as weights.
     if not isinstance(majors, dict):
-        majors = dict(zip(majors, [1 for _ in range(majors)]))
+        majors = dict(zip(majors, [1 for _ in range(len(majors))]))
     if not isinstance(minors, dict):
-        minors = dict(zip(minors, [1 for _ in range(minors)]))
+        minors = dict(zip(minors, [1 for _ in range(len(minors))]))
     
     get_score = {
         (True, True)  : lambda maj,min : maj/num_majors + min/num_minors,
